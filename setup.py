@@ -5,10 +5,12 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="escape-unk",
+    version="1.0",
     description="Escape unknown symbols in SentecePiece vocabularies",
     author="Jaume Zaragoza",
     author_email="jzaragoza@prompsit.com",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/ZJaume/escape-unk",
     packages=setuptools.find_packages(),
     install_requires=[
