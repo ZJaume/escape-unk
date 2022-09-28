@@ -11,6 +11,10 @@ def main():
         return spm.encode(text, add_bos=False, add_eos=False,
                           out_type=output_type)
 
+    def escape(piece):
+        ''' Convert unicode string to hex values '''
+        return '[[' + piece.encode('utf-8').hex() +']]'
+
     #TODO choose escape delimiters based on spm vocab to avoid OOV
     spm = sp.SentencePieceProcessor(args.spm_model)
 
@@ -21,7 +25,7 @@ def main():
         for id_, piece in zip(ids, pieces):
             if spm.is_unknown(id_):
                 # Escape
-                escaped.append('[[' + str(ord(piece)) + ']]')
+                escaped.append(escape(piece))
             else:
                 escaped.append(piece)
 

@@ -1,11 +1,11 @@
 import regex
 import sys
 
-escaped_re = regex.compile(r"\[\[\d+\]\]")
+escaped_re = regex.compile(r"\[\[[a-z\d]+\]\]")
 
-# Remove escape delimiter and convert to char
 def unescape(match):
-    return chr(int(match.captures()[0].strip('[]')))
+    ''' Convert hex values to unicode string '''
+    return bytes.fromhex((match.captures()[0].strip('[]'))).decode('utf-8')
 
 for line in sys.stdin:
     # Find splits and matches inside the sentence
