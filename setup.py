@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="escape-unk",
-    version="1.0",
+    version="1.0.1",
     description="Escape unknown symbols in SentecePiece vocabularies",
     author="Jaume Zaragoza",
     author_email="jzaragoza@prompsit.com",
