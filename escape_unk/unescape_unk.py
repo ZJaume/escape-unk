@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 import regex
 import sys
 
@@ -8,6 +9,9 @@ def unescape(match):
     return bytes.fromhex((match.captures()[0].strip('[]'))).decode('utf-8')
 
 def main():
+    parser = ArgumentParser()
+    args = parser.parse_args()
+
     for line in sys.stdin:
         # Find splits and matches inside the sentence
         escaped = list(escaped_re.finditer(line.strip()))
