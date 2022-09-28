@@ -1,16 +1,29 @@
 from argparse import ArgumentParser
+import logging
 import regex
 import sys
 
+try:
+    from .utils import setup_logging
+except ImportError:
+    from utils import setup_logging
+
+
 escaped_re = regex.compile(r"\[\[[a-z\d]+\]\]")
+
 
 def unescape(match):
     ''' Convert hex values to unicode string '''
-    return bytes.fromhex((match.captures()[0].strip('[]'))).decode('utf-8')
+    hexvalue = match.captures()[0].strip('[]')
+    logging.debug(f"Unescaping: '{hexvalue}'")
+    return bytes.fromhex(hexvalue).decode('utf-8')
+
 
 def main():
     parser = ArgumentParser()
+    parser.add_argument('--debug', action='store_true', help='Debug mode')
     args = parser.parse_args()
+    setup_logging(args)
 
     for line in sys.stdin:
         # Find splits and matches inside the sentence
@@ -26,6 +39,7 @@ def main():
                 output += split
 
         print(output)
+
 
 if __name__ == "__main__":
     main()

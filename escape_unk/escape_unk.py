@@ -1,11 +1,20 @@
 from argparse import ArgumentParser
 import sentencepiece as sp
+import logging
 import sys
+
+try:
+    from .utils import setup_logging
+except ImportError:
+    from utils import setup_logging
+
 
 def main():
     parser = ArgumentParser()
     parser.add_argument('-m','--spm_model', required=True)
+    parser.add_argument('--debug', action='store_true', help='Debug mode')
     args = parser.parse_args()
+    setup_logging(args)
 
     spm = sp.SentencePieceProcessor(args.spm_model)
 
@@ -17,6 +26,7 @@ def main():
     def escape(text):
         ''' Convert unicode string to hex values '''
         #TODO choose escape delimiters based on spm vocab to avoid OOV
+        logging.debug(f"Escaping '{text}'")
         return '[[' + text.encode('utf-8').hex() +']]'
 
     for line in sys.stdin:
@@ -34,6 +44,7 @@ def main():
         # Detokenize manually to void spm introducing spaces in escaped text
         # lstrip to remove initial space that is removed by spm.decode
         print(''.join(escaped).replace('▁', ' ').lstrip())
+
 
 if __name__ == "__main__":
     main()
