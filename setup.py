@@ -12,6 +12,7 @@ setuptools.setup(
     url="https://github.com/ZJaume/escape-unk",
     packages=setuptools.find_packages(),
     install_requires=[
+        "regex",
         "sentencepiece",
     ],
     entry_points={
