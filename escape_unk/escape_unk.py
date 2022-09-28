@@ -7,19 +7,21 @@ def main():
     parser.add_argument('-m','--spm_model', required=True)
     args = parser.parse_args()
 
+    spm = sp.SentencePieceProcessor(args.spm_model)
+
     def encode(text, output_type=str):
+        ''' SentencePiece encoding without control tokens '''
         return spm.encode(text, add_bos=False, add_eos=False,
                           out_type=output_type)
 
-    def escape(piece):
+    def escape(text):
         ''' Convert unicode string to hex values '''
-        return '[[' + piece.encode('utf-8').hex() +']]'
-
-    #TODO choose escape delimiters based on spm vocab to avoid OOV
-    spm = sp.SentencePieceProcessor(args.spm_model)
+        #TODO choose escape delimiters based on spm vocab to avoid OOV
+        return '[[' + text.encode('utf-8').hex() +']]'
 
     for line in sys.stdin:
         escaped = []
+        # Encode to ids and pieces and escape pieces that are unknown
         ids = encode(line.strip('\n'), int)
         pieces = encode(line.strip('\n'))
         for id_, piece in zip(ids, pieces):
