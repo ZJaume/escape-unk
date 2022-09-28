@@ -1,6 +1,6 @@
 # escape-unk
 Escape unknown symbols in SentecePiece vocabularies.
-This is particulary useful for [MarianNMT](https://github.com/marian-nmt/marian) toolkit which does not support replacing unknown tokens with most attentive word in the source (see [here](https://github.com/marian-nmt/marian-dev/issues/732).
+This is particulary useful for [MarianNMT](https://github.com/marian-nmt/marian) toolkit which does not support replacing unknown tokens with most attentive word in the source (see [here](https://github.com/marian-nmt/marian-dev/issues/732), thanks to @emjotde for the idea).
 
 ## Install
 Just install it from PyPi
