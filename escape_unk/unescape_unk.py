@@ -12,16 +12,26 @@ except ImportError:
 escaped_re = regex.compile(r"\[\[[a-z\d]+\]\]")
 
 
-def unescape(match):
+def unescape(match, strict=False):
     ''' Convert hex values to unicode string '''
     hexvalue = match.captures()[0].strip('[]')
     logging.debug(f"Unescaping: '{hexvalue}'")
-    return bytes.fromhex(hexvalue).decode('utf-8')
-
+    try:
+        b = bytes.fromhex(hexvalue).decode('utf-8')
+    except ValueError:
+        if strict:
+            # Return invalid sequences without escaping
+            return match.captures()[0]
+        else:
+            # Return invalid hex sequences as empty value
+            return ''
+    return b
 
 def main():
     parser = ArgumentParser()
     parser.add_argument('--debug', action='store_true', help='Debug mode')
+    parser.add_argument('-s','--strict', action='store_true',
+            help='Strict mode. By default invalid escaped sequences will be omitted.')
     args = parser.parse_args()
     setup_logging(args)
 
@@ -34,7 +44,7 @@ def main():
         # Join splits with unescaped matches
         for i, split in enumerate(splits):
             if i != len(splits)-1:
-                output += split + unescape(escaped[i])
+                output += split + unescape(escaped[i], args.strict)
             else:
                 output += split
 
