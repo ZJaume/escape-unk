@@ -20,8 +20,9 @@ def unescape(match, strict=False):
         b = bytes.fromhex(hexvalue).decode('utf-8')
     except ValueError:
         if strict:
-            # Return invalid sequences without escaping
-            return match.captures()[0]
+            # Reraise the exception in strict mode
+            raise ValueError("Invalid escaped sequence." \
+                             + " Translator may have copied it wrong.")
         else:
             # Return invalid hex sequences as empty value
             return ''
