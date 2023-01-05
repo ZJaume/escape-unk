@@ -5,7 +5,7 @@ This is particulary useful for [MarianNMT](https://github.com/marian-nmt/marian)
 ## Install
 Just install it from PyPi
 ```
-pip install unescape-unk
+pip install escape-unk
 ```
 
 ## Background
@@ -52,3 +52,8 @@ echo "Beijing ..." | escape-unk -m vocab.deen.spm | marian-decode -c config.yml 
 ```
 Beijing (chinesisch: 北京) ist die Hauptstadt der Volksrepublik China
 ```
+
+**WARNING**: if an escaped sequence is not correctly copied by the translator and generates an invalid sequence,
+the character is omitted and substituted by an empty string.
+If you want it to fail when this happens, use `--strict`/`-s` mode with `unescape-unk` command.
+
