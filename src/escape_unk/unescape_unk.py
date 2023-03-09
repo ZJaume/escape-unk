@@ -9,7 +9,9 @@ except ImportError:
     from utils import setup_logging
 
 
-escaped_re = regex.compile(r"\[\[[a-z\d]+\]\]")
+# Detect escaped characters
+# allow one of the brackets missing
+escaped_re = regex.compile(r"\[?\[[abcdef\d]+\]\]|\[\[[abcdef\d]+\]\]?")
 
 
 def unescape(match, strict=False):
