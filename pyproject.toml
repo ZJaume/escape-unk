@@ -1,6 +1,6 @@
 [project]
 name = "escape-unk"
-version = "1.1"
+version = "1.2"
 authors = [
     { name="Jaume Zaragoza", email="jzaragoza@prompsit.com" }
 ]
