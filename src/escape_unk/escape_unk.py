@@ -29,11 +29,11 @@ def main():
         logging.debug(f"Escaping '{text}'")
         return '[[' + text.encode('utf-8').hex() +']]'
 
-    for line in sys.stdin:
+    def process(segment):
         escaped = []
         # Encode to ids and pieces and escape pieces that are unknown
-        ids = encode(line.strip('\n'), int)
-        pieces = encode(line.strip('\n'))
+        ids = encode(segment, int)
+        pieces = encode(segment)
         for id_, piece in zip(ids, pieces):
             if spm.is_unknown(id_):
                 # Escape
@@ -43,7 +43,23 @@ def main():
 
         # Detokenize manually to void spm introducing spaces in escaped text
         # lstrip to remove initial space that is removed by spm.decode
-        print(''.join(escaped).replace('▁', ' ').lstrip())
+        return ''.join(escaped).replace('▁', ' ').lstrip()
+
+    last_num_parts = 0
+    for i, line in enumerate(sys.stdin):
+        parts = line.strip().split('\t')
+
+        # If input is a tsv, escape each field individually
+        for j, segment in enumerate(parts):
+            print(process(segment), end='')
+            if j < len(parts) - 1:
+                print('\t', end='')
+        print()
+
+        if last_num_parts != len(parts) and last_num_parts != 0:
+            raise ValueError(f"Line {i+1}: different number of tabs. prev: {last_num_parts} curr: {len(parts)}")
+        last_num_parts = len(parts)
+
 
 
 if __name__ == "__main__":
