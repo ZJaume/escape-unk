@@ -2,6 +2,8 @@
 Escape unknown symbols in SentecePiece vocabularies.
 This is particulary useful for [MarianNMT](https://github.com/marian-nmt/marian) toolkit which does not support replacing unknown tokens with most attentive word in the source (see [here](https://github.com/marian-nmt/marian-dev/issues/732), thanks to @emjotde for the idea).
 
+**IMPORTANT NOTE**: this solution is far from ideal, as the model, especially if it has not been trained with escaped chars, may fail to copy the escaped unknown characters. Ideally, you should train your SentencePiece vocabulary with `--byte_fallback` option. This is just a workaround for scenarios where model does not have byte fallback or can not be re-trained.
+
 ## Install
 Just install it from PyPi
 ```
