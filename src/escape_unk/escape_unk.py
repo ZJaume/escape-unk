@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from sentencepiece.sentencepiece_model_pb2 import ModelProto
 import sentencepiece as sp
 import logging
 import sys
@@ -17,6 +18,15 @@ def main():
     setup_logging(args)
 
     spm = sp.SentencePieceProcessor(args.spm_model)
+
+    # Check if model has byte_fallback
+    mp = ModelProto()
+    mp.ParseFromString(spm.serialized_model_proto())
+    if mp.trainer_spec.HasField('byte_fallback') and mp.trainer_spec.byte_fallback:
+        args.byte_fallback = True
+    else:
+        args.byte_fallback = False
+    del mp
 
     def encode(text, output_type=str):
         ''' SentencePiece encoding without control tokens '''
@@ -47,6 +57,10 @@ def main():
 
     last_num_parts = 0
     for i, line in enumerate(sys.stdin):
+        if args.byte_fallback: # If byte-fallback, just cat
+            print(line, end='')
+            continue
+
         parts = line.strip().split('\t')
 
         # If input is a tsv, escape each field individually
