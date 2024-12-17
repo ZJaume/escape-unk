@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from sentencepiece.sentencepiece_model_pb2 import ModelProto
 import sentencepiece as sp
 import logging
+import re
 import sys
 
 try:
@@ -9,6 +10,7 @@ try:
 except ImportError:
     from utils import setup_logging
 
+RE_ESCAPE = re.compile(r"([¹²³\u2070-\u209F])")
 
 def main():
     parser = ArgumentParser()
@@ -39,7 +41,21 @@ def main():
         logging.debug(f"Escaping '{text}'")
         return '[[' + text.encode('utf-8').hex() +']]'
 
+    def escape_regex(text):
+        ''' Apply escaping to characters matching by the regex '''
+        toks = []
+        for s in RE_ESCAPE.split(text):
+            if RE_ESCAPE.match(s):
+                toks.append(escape(s))
+            else:
+                toks.append(s)
+
+        return ''.join(toks)
+
     def process(segment):
+        # Apply escaping to superscripts and other characters before they are normalized by SP
+        segment = escape_regex(segment)
+
         escaped = []
         # Encode to ids and pieces and escape pieces that are unknown
         ids = encode(segment, int)
