@@ -10,7 +10,8 @@ try:
 except ImportError:
     from utils import setup_logging
 
-RE_ESCAPE = re.compile(r"([¹²³\u2070-\u209F])")
+# Regex for characters that require escaping before SP normalizing is applied
+PRE_ESCAPE = re.compile(r"([¹²³\u2070-\u209F])")
 
 def main():
     parser = ArgumentParser()
@@ -28,6 +29,12 @@ def main():
         args.byte_fallback = True
     else:
         args.byte_fallback = False
+
+    # Superscripts will be escaped only when nfkc is used
+    if mp.normalizer_spec.name == "nmt_nfkc" or mp.normalizer_spec.name == "nfkc":
+        args.pre_escape = True
+    else:
+        args.pre_escape = False
     del mp
 
     def encode(text, output_type=str):
@@ -41,11 +48,11 @@ def main():
         logging.debug(f"Escaping '{text}'")
         return '[[' + text.encode('utf-8').hex() +']]'
 
-    def escape_regex(text):
+    def pre_escape(text):
         ''' Apply escaping to characters matching by the regex '''
         toks = []
-        for s in RE_ESCAPE.split(text):
-            if RE_ESCAPE.match(s):
+        for s in PRE_ESCAPE.split(text):
+            if PRE_ESCAPE.match(s):
                 toks.append(escape(s))
             else:
                 toks.append(s)
@@ -54,7 +61,8 @@ def main():
 
     def process(segment):
         # Apply escaping to superscripts and other characters before they are normalized by SP
-        segment = escape_regex(segment)
+        if args.pre_escape:
+            segment = pre_escape(segment)
 
         escaped = []
         # Encode to ids and pieces and escape pieces that are unknown
